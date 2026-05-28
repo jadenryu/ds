@@ -12,11 +12,8 @@ import torch
 from PIL import Image
 from app import model, processor, COUNTRIES, PROMPTS, device
 
-# ── paste your key here ───────────────────────────────────────────────────────
-GOOGLE_API_KEY = "YOUR_API_KEY_HERE"
-# ─────────────────────────────────────────────────────────────────────────────
+GOOGLE_API_KEY = "API_KEY"
 
-# (lat, lng, country) — one representative location per country
 TEST_LOCATIONS = [
     (48.8566, 2.3522, "France"),
     (51.5074, -0.1278, "United Kingdom"),
@@ -152,7 +149,6 @@ TEST_LOCATIONS = [
     (-21.2120, -159.7750, "Cook Islands"),
 ]
 
-# deduplicate by country, keep first occurrence
 seen = set()
 EVAL_SET = []
 for lat, lng, country in TEST_LOCATIONS:

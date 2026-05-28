@@ -23,7 +23,6 @@ COUNTRIES = [
     "Vietnam", "Zimbabwe",
 ]
 
-# Ensemble of prompt templates — averaged embeddings reduce per-template noise
 PROMPT_TEMPLATES = [
     "A Street View photo in {}",
     "a photo I took in {}",
@@ -57,7 +56,6 @@ with torch.no_grad():
         embeds = model.get_text_features(**inputs)
         embeds = embeds / embeds.norm(dim=-1, keepdim=True)
         template_embeds.append(embeds)
-    # Average across templates then re-normalise
     TEXT_EMBEDS = torch.stack(template_embeds).mean(dim=0)
     TEXT_EMBEDS = TEXT_EMBEDS / TEXT_EMBEDS.norm(dim=-1, keepdim=True)
 print("Ready.")
@@ -87,7 +85,6 @@ def predict(image):
     with torch.no_grad():
         image_embeds = model.get_image_features(**inputs)
         image_embeds = image_embeds / image_embeds.norm(dim=-1, keepdim=True)
-        # Average crops then re-normalise
         image_embed = image_embeds.mean(dim=0, keepdim=True)
         image_embed = image_embed / image_embed.norm(dim=-1, keepdim=True)
 
