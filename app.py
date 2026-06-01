@@ -54,15 +54,16 @@ with torch.no_grad():
             max_length=77,
         ).to(device)
         embeds = model.get_text_features(**inputs)
+        if not isinstance(embeds, torch.Tensor):
+            embeds = model.text_projection(embeds.pooler_output)
         embeds = embeds / embeds.norm(dim=-1, keepdim=True)
         template_embeds.append(embeds)
     TEXT_EMBEDS = torch.stack(template_embeds).mean(dim=0)
     TEXT_EMBEDS = TEXT_EMBEDS / TEXT_EMBEDS.norm(dim=-1, keepdim=True)
-print("Ready.")
+print("Ready")
 
 
 def _make_crops(pil_image: Image.Image) -> list[Image.Image]:
-    """Multi-crop ensemble: original + 4 corner crops at 85% scale."""
     w, h = pil_image.size
     s = int(min(w, h) * 0.85)
     crops = [pil_image]
@@ -84,6 +85,9 @@ def predict(image):
 
     with torch.no_grad():
         image_embeds = model.get_image_features(**inputs)
+        if not isinstance(image_embeds, torch.Tensor):
+            vision_out = model.vision_model(pixel_values=inputs['pixel_values'])
+            image_embeds = model.visual_projection(vision_out.pooler_output)
         image_embeds = image_embeds / image_embeds.norm(dim=-1, keepdim=True)
         image_embed = image_embeds.mean(dim=0, keepdim=True)
         image_embed = image_embed / image_embed.norm(dim=-1, keepdim=True)
