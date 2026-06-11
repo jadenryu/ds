@@ -1,10 +1,3 @@
-"""
-Accuracy evaluation using Google Street View Static API.
-
-Get a free API key at: https://developers.google.com/maps/documentation/streetview/get-api-key
-Enable "Street View Static API" in your Google Cloud project.
-"""
-
 import io
 import requests
 import numpy as np
@@ -187,8 +180,8 @@ def classify(pil_image: Image.Image) -> list[tuple[str, float]]:
 
 
 def evaluate():
-    if GOOGLE_API_KEY == "YOUR_API_KEY_HERE":
-        print("ERROR: set GOOGLE_API_KEY in evaluate.py first.")
+    if GOOGLE_API_KEY == "temp":
+        print("set api key")
         return
 
     top1_correct = 0
@@ -200,7 +193,7 @@ def evaluate():
     for lat, lng, true_country in EVAL_SET:
         img = fetch_street_view(lat, lng)
         if img is None:
-            print(f"  [SKIP] No Street View for {true_country} ({lat}, {lng})")
+            print(f"no Street View for {true_country} ({lat}, {lng})")
             failures += 1
             continue
 
@@ -214,11 +207,11 @@ def evaluate():
         top5_correct += hit5
         total += 1
 
-        status = "✓" if hit1 else ("~" if hit5 else "✗")
-        print(f"  {status} {true_country:30s}  predicted: {top1}")
+        status = "yes" if hit1 else ("~" if hit5 else "no")
+        print(f"{status} {true_country:30s}  predicted: {top1}")
 
     if total == 0:
-        print("\nNo images could be fetched.")
+        print("\nno images could be fetched.")
         return
 
     print(f"\n{'─'*50}")
